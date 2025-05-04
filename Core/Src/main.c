@@ -23,6 +23,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "EtherSense.h"
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -64,7 +65,7 @@ static void MX_SPI1_Init(void);
 void StartEthernetTask(void *argument);
 
 /* USER CODE BEGIN PFP */
-
+extern void UdpSenderTask(void *argument);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -112,9 +113,15 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_MUTEX */
   /* add mutexes, ... */
+  const osThreadAttr_t udpSenderTask_attributes = {
+    .name = "udpSenderTask",
+    .priority = (osPriority_t) osPriorityNormal,
+    .stack_size = 1024 * 4
+  };
   /* USER CODE END RTOS_MUTEX */
 
   /* USER CODE BEGIN RTOS_SEMAPHORES */
+
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
 
@@ -131,6 +138,14 @@ int main(void)
   EtherSenseHandle = osThreadNew(StartEthernetTask, NULL, &EtherSense_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+  printf("Creating UDP task...\r\n");
+  osThreadId_t udpTask = osThreadNew(UdpSenderTask, NULL, &udpSenderTask_attributes);
+  if (udpTask == NULL) {
+      printf("UDP task creation FAILED\r\n");
+  } else {
+      printf("UDP task created\r\n");
+  }
+
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 

@@ -5,7 +5,7 @@
 #include "stm32f1xx_ll_usart.h"
 #include "w5500_hal.h"
 #include <stdio.h>
-
+#include <string.h>
 extern SPI_HandleTypeDef hspi1; // Ensure SPI1 is visible here
 
 // TX/RX memory size per socket
@@ -65,5 +65,33 @@ void StartEthernetTask(void *argument)
 
     while (1) {
         osDelay(5000);
+    }
+}
+
+void UdpSenderTask(void *argument)
+{
+	 osDelay(2000);
+    printf("UDP Sender Task started\r\n");
+
+    uint8_t socket_num = 0;
+    uint16_t local_port = 4000;
+
+    printf("Opening socket...\r\n");
+    int8_t s = socket(socket_num, Sn_MR_UDP, local_port, 0);
+    if (s != socket_num) {
+        printf("UDP socket open failed: %d\r\n", s);
+        while (1);
+    }
+    printf("UDP socket opened\r\n");
+
+    uint8_t dest_ip[4] = {192, 168, 100, 10};
+    uint16_t dest_port = 5000;
+    char udp_msg[] = "Hello from EtherSense!\n";
+
+    while (1) {
+        printf("Sending UDP packet...\r\n");
+        sendto(socket_num, (uint8_t *)udp_msg, strlen(udp_msg), dest_ip, dest_port);
+        printf("Sent UDP packet\r\n");
+        osDelay(2000);
     }
 }

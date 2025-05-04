@@ -1,0 +1,20 @@
+# STM32CubeIDE junk
+*.launch
+*.log
+*.tmp
+*.bin
+*.elf
+*.hex
+*.map
+
+# Build output
+Debug/
+Release/
+
+# IDE files
+.settings/
+.cproject
+.project
+
+# CubeMX backup
+*.ioc.backup

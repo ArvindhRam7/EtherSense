@@ -86,11 +86,16 @@ void UdpSenderTask(void *argument)
 
     uint8_t dest_ip[4] = {192, 168, 100, 10};
     uint16_t dest_port = 5000;
-    char udp_msg[] = "Hello from EtherSense!\n";
+    char udp_msg[64];
+    float temperature = 24.8;
+    float humidity = 40.5;
 
     while (1) {
         printf("Sending UDP packet...\r\n");
+        snprintf(udp_msg, sizeof(udp_msg), "TEMP:%.1f,HUM:%.1f", temperature, humidity);
+        printf("Sending UDP packet: %s\r\n", udp_msg);
         sendto(socket_num, (uint8_t *)udp_msg, strlen(udp_msg), dest_ip, dest_port);
+
         printf("Sent UDP packet\r\n");
         osDelay(2000);
     }
